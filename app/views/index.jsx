@@ -3,19 +3,7 @@ const CodePicnic = require('codepicnic');
 const StartScreenView = require('./startScreen.jsx');
 const AppView = require('./app.jsx');
 
-let uiRootClass;
-
-switch(global.process.platform) {
-  case 'darwin':
-    uiRootClass = 'macosx';
-  break;
-  case 'win32':
-    uiRootClass = 'windows10';
-  break;
-  default:
-    uiRootClass = 'elementaryos';
-  break;
-}
+let uiRootClass = require('../helpers').classFromPlatform();
 
 const RootView = React.createClass({
   getInitialState: function() {
