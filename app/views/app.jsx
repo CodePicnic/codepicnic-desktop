@@ -27,7 +27,10 @@ const AppView = React.createClass({
     return { consoles: emptyConsoles };
   },
   getInitialState: function getInitialState() {
-    return { consoles: this.props.consoles, currentConsole: null };
+    return { initialConsoles: this.props.consoles, currentConsole: null };
+  },
+  componentWillMount: function componentWillMount() {
+    this.setState({ consoles: this.state.initialConsoles });
   },
   componentDidMount: function componentDidMount() {
     if (this.state.consoles.length === 0) {
@@ -51,9 +54,16 @@ const AppView = React.createClass({
       previousConsoles.length = 0;
       previousConsoles = previousConsoles.concat(consoles.filter(filterConsolesByContainerType));
 
-      self.setState({ consoles: previousConsoles });
+      self.setState({ consoles: previousConsoles, initialConsoles: previousConsoles });
       self = null;
     });
+  },
+  onChangeSearch: function onChangeSearch(event) {
+    var filteredConsoles = this.state.initialConsoles.filter(function(console) {
+      return console.get('name').match(RegExp(event.currentTarget.value, "ig"));
+    });
+
+    this.setState({ consoles: filteredConsoles });
   },
   onClickReloadButton: function onClickReloadButton() {
     this.loadConsoles();
@@ -98,11 +108,11 @@ const AppView = React.createClass({
       <div className="stack-layout-vertical">
         <nav className="toolbar">
           <button type="button" className="toolbar-button" title="Add a console"><Icon id="plus" /></button>
-          <input className="full" type="search" placeholder="Search consoles" />
+          <input className="full" type="search" placeholder="Search consoles" onChange={this.onChangeSearch} />
           <button type="button" className="toolbar-button" title="Reload" onClick={this.onClickReloadButton}><Icon id="reload" /></button>
           <button type="button" className="toolbar-button" title="Settings"><Icon id="settings" /></button>
         </nav>
-        <div className="stack-layout-horizontal">
+        <div className="stack-layout-horizontal fill-parent">
           <Table items={this.state.consoles} renderRow={this.renderTableRow}>
             <th style={{ minWidth: '300px', maxWidth: '80%' }}>Name</th>
             <th style={{ width: '120px' }}>Created at</th>
